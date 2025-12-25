@@ -155,6 +155,6 @@ final-year-project/
 
 * [LinkedIn Profile](https://www.linkedin.com/in/jit-chen-khiew)
 * [GitHub Profile](https://www.github.com/lionelKhiew)
-* **Demo Video:**:
+* **Demo Video:**
   [YouTube Link](https://www.youtube.com/watch?v=cjeFeZdarl4)
 
