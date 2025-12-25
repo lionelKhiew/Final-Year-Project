@@ -1,4 +1,3 @@
-# server.py
 import os
 import queue
 import base64
@@ -10,21 +9,39 @@ from subprocess import PIPE
 app = Flask(__name__)
 
 
-# --- Jupyter Kernel Wrapper ---
 class DockerKernel:
     def __init__(self, work_dir="/app/workspace"):
         self.work_dir = work_dir
         if not os.path.exists(self.work_dir):
             os.makedirs(self.work_dir)
 
+        self.start()
+
+    def start(self):
+        """Initializes the kernel."""
         self.kernel_manager = jupyter_client.KernelManager(kernel_name="python3")
         self.kernel_manager.start_kernel(stdout=PIPE, stderr=PIPE)
         self.kernel = self.kernel_manager.blocking_client()
         self.kernel.start_channels()
         self.kernel.wait_for_ready(timeout=10)
-        print(f"--- Kernel Ready in {work_dir} ---")
+        print(f"--- Kernel Ready in {self.work_dir} ---")
+
+    def shutdown(self):
+        """Kills the current kernel."""
+        try:
+            self.kernel_manager.shutdown_kernel(now=True)
+        except Exception as e:
+            print(f"Error shutting down: {e}")
+
+    def restart(self):
+        """Restarts the kernel."""
+        print("--- Restarting Kernel ---")
+        self.shutdown()
+        self.start()
+        return "Kernel Restarted"
 
     def execute(self, code):
+        # ... (This part remains exactly the same as your old code) ...
         self.kernel.execute(code)
         msg_list = []
         start_time = time.time()
@@ -72,6 +89,7 @@ class DockerKernel:
         return {"logs": "".join(logs), "images": images}
 
 
+# Initialize Global Kernel
 kernel = DockerKernel()
 
 
@@ -79,6 +97,16 @@ kernel = DockerKernel()
 def execute_endpoint():
     code = request.json.get("code", "")
     return jsonify(kernel.execute(code))
+
+
+# --- NEW: RESTART ENDPOINT ---
+@app.route("/restart", methods=["POST"])
+def restart_endpoint():
+    try:
+        kernel.restart()
+        return jsonify({"status": "success", "message": "Kernel restarted."})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 if __name__ == "__main__":

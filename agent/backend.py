@@ -6,11 +6,11 @@ from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
 
 from config import LLM_BASE_URL, LLM_API_KEY, LLM_MODEL
-from agent.tools import docker_python_tool
+from agent.tools import docker_python_tool, create_rag_tool
 from agent.prompts import get_system_prompt
 
 
-def get_agent_graph(db_uri=None):
+def get_agent_graph(db_uri=None, vector_store=None):
     # 1. Setup LLM
     llm = ChatOpenAI(
         base_url=LLM_BASE_URL,
@@ -41,13 +41,19 @@ def get_agent_graph(db_uri=None):
             st.error(f"⚠️ DB Connection Failed in Backend: {e}")
             sql_tools = []
 
+    # 3. RAG Tool (Using the Factory)
+    rag_tools = []
+    if vector_store:
+        retriever = vector_store.as_retriever()
+        # Call the factory function to get the tool
+        rag_tools = [create_rag_tool(retriever)]
+
     # 3. Combine Tools
-    all_tools = sql_tools + [docker_python_tool]
+    all_tools = sql_tools + [docker_python_tool] + rag_tools
 
     # 4. System Prompt
-    system_msg = SystemMessage(
-        content=get_system_prompt(db_status, docker_friendly_uri)
-    )
+    # 4. Get System Prompt String (Do not wrap in SystemMessage yet)
+    system_prompt_str = get_system_prompt(db_status, docker_friendly_uri)
 
-    # 5. Create Agent
-    return create_agent(llm, all_tools, system_prompt=system_msg)
+    # 5. Create Agent (Pass the string directly)
+    return create_agent(llm, all_tools, system_prompt=system_prompt_str)

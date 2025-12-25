@@ -56,7 +56,12 @@ def docker_python_tool(code: str) -> str:
         files_before = set()
 
     try:
-        response = requests.post(DOCKER_EXEC_URL, json={"code": final_code}, timeout=45)
+        response = requests.post(
+            DOCKER_EXEC_URL,
+            json={"code": final_code},
+            timeout=300,
+            stream=True,  # <--- 关键：开启流式传输
+        )
         data = response.json()
 
         # --- LOG PARSING ---
@@ -99,3 +104,30 @@ def docker_python_tool(code: str) -> str:
         raw_trace = traceback.format_exc()
         clean_trace = strip_ansi_codes(raw_trace)
         return f"EXECUTION_ERROR:\n{clean_trace}"
+
+
+# --- NEW: RAG TOOL FACTORY ---
+def create_rag_tool(retriever):
+    """
+    Creates a search tool bound to a specific document retriever.
+    We wrap it in a function so we can pass the 'retriever' object dynamically.
+    """
+    
+    @tool
+    def search_bank_policy(query: str) -> str:
+        """
+        Searches the Bank Policy & Data Dictionary. 
+        Use this when the user asks about definitions, rules, churn policy, or domain knowledge.
+        """
+        try:
+            # The tool uses the 'retriever' from the outer scope
+            docs = retriever.invoke(query)
+            if not docs:
+                return "No relevant documents found."
+            
+            # Format the results nicely
+            return "\n\n".join([f"[Source: {doc.metadata.get('source', 'Unknown')}]\n{doc.page_content}" for doc in docs])
+        except Exception as e:
+            return f"Error searching documents: {str(e)}"
+
+    return search_bank_policy

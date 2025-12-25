@@ -3,10 +3,10 @@ version: '3.8'
 services:
   #Service 1: 你的 Python 执行环境 (基于你的 Dockerfile)
   agent-sandbox:
-    build: .  # "." 表示使用当前目录下的 Dockerfile 构建
+    build: ./sandbox  # "." 表示使用当前目录下的 Dockerfile 构建
     container_name: python_agent_sandbox
     ports:
-      - "5001:5000"  # We move the entrance to 5001
+      - "5000:5000"  # We move the entrance to 5001
     volumes:
       - ./workspace:/app/workspace # 挂载工作区，方便存图
     environment:

@@ -10,7 +10,7 @@ if not os.path.exists(WORKSPACE_DIR):
     os.makedirs(WORKSPACE_DIR)
 
 # Docker Execution Service URL
-DOCKER_EXEC_URL = "http://localhost:5001/execute"
+DOCKER_EXEC_URL = "http://localhost:5000/execute"
 
 # LLM Configuration
 LLM_BASE_URL = "http://localhost:1234/v1"
