@@ -1,0 +1,57 @@
+==============================================================================
+                      GLOBAL BANK - DATA DICTIONARY & POLICY
+                               CONFIDENTIAL
+==============================================================================
+
+1. DATA DICTIONARY
+------------------------------------------------------------------------------
+The following definitions apply to the "Churn_Modelling" database:
+
+- CreditScore:    A numerical value between 350 and 850 representing the customer's 
+                  creditworthiness. Scores below 400 are considered "High Risk".
+                  
+- Geography:      The country of residence. Current markets: France, Germany, Spain.
+
+- Gender:         Male or Female.
+
+- Age:            Customer's age in years. 
+                  * Note: Customers aged 40-50 are statistically our most valuable segment.
+
+- Tenure:         Number of years the customer has been with the bank.
+                  * Loyalty Tier: Tenure > 7 years is considered "Loyal".
+
+- Balance:        Current account balance in EUR.
+
+- NumOfProducts:  Number of bank products the customer uses (e.g., savings, credit card, loan).
+                  * Risk Alert: Customers with 3 or 4 products have a higher churn rate due to 
+                    potential dissatisfaction with complex portfolio management.
+
+- HasCrCard:      1 = Customer holds a credit card. 0 = No credit card.
+
+- IsActiveMember: 1 = Active (at least one transaction in the last 30 days). 
+                  0 = Inactive.
+
+- EstimatedSalary: Annual estimated salary in EUR.
+
+- Exited:         This is the target variable for churn prediction.
+                  1 = CHURNED (Customer closed account and left).
+                  0 = RETAINED (Customer is still with the bank).
+
+------------------------------------------------------------------------------
+2. CHURN MANAGEMENT POLICY
+------------------------------------------------------------------------------
+2.1 Definition of High-Value Churn
+A "High-Value Churn" event is defined as a customer who Exited (1) while having 
+a Balance greater than €100,000. These cases must be prioritized for analysis.
+
+2.2 Retention Strategy
+- For customers with a CreditScore > 650 and Tenure > 5 years, the bank authorizes 
+  a retention bonus of €50 if their churn probability exceeds 60%.
+  
+2.3 Privacy
+- The 'Surname' column must be excluded from predictive modeling to ensure ethical AI practices 
+  and prevent bias.
+
+==============================================================================
+END OF DOCUMENT
+==============================================================================
