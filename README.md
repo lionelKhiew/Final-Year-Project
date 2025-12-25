@@ -1,4 +1,4 @@
-https://www.youtube.com/watch?v=cjeFeZdarl4# 🤖 Agentic Data Scientist (Final Year Project)
+  # 🤖 Agentic Data Scientist (Final Year Project)
 
 **An autonomous AI Agent capable of performing data science tasks, executing Python code in a sandboxed environment, querying SQL databases, and answering domain-specific questions using RAG.**
 
